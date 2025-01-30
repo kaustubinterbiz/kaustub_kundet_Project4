@@ -15,7 +15,7 @@ namespace SpecFlowFrameWork.StepDefinitions
         private WebdriverWaitClass _waitHelper;
         private IJavaScriptExecutor jsExecutor;
         public string actualTxt = "You logged into a secure area!";
-        public string invalidLoginActualTxt = "Your password is invalid";
+        public string invalidLoginActualTxt = "Your password is invalid!";
         public TestStepDefinitions(IWebDriver driver)
         {
             _driver = driver;
