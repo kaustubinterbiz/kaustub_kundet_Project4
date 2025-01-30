@@ -7,7 +7,8 @@ A short summary of the feature
 Scenario Outline: DataDrivenTesting
     Given  Entered a valid "<Username>" and "<Password>"
     When I click the login button
-    Then Validation of Login Credentials and User Access
+    #Then Validation of Login Credentials and User Access
+    Then Validation of Login Credentials "<Username>" and "<Password>"
     
     Examples: 
      | Username | Password             |
