@@ -1,90 +1,164 @@
-using NUnit.Framework;
+using BoDi;
 using OpenQA.Selenium;
-using SpecFlowFrameWork.HelperClass;
-using SpecFlowProject1.Utility;
+using OpenQA.Selenium.Support.UI;
 using System;
 using TechTalk.SpecFlow;
+using SpecFlowFrameWork.HelperClass;
+using NUnit.Framework;
 
 namespace SpecFlowFrameWork.StepDefinitions
 {
     [Binding]
-    public class DataDrivenTestingStepDefinitions
+    public class TestStepDefinitions
     {
-        private IWebDriver _driver;
+        private readonly IWebDriver _driver;
         private WebdriverWaitClass _waitHelper;
         private IJavaScriptExecutor jsExecutor;
-        private static JSonReader _jsonReader = new JSonReader();
-
-        public DataDrivenTestingStepDefinitions(IWebDriver driver)
+        public string actualTxt = "You logged into a secure area!";
+        public string invalidLoginActualTxt = "Your password is invalid!";
+        public TestStepDefinitions(IWebDriver driver)
         {
             _driver = driver;
         }
 
-        [Given(@"Entered a valid ""(.*)"" and ""(.*)""")]
-        public void GivenIHaveEnteredAValid(string Username, string Password)
+        [Given(@"I have entered a valid username and password")]
+        public void GivenIHaveEnteredAValidUsernameAndPassword()
         {
-            Console.WriteLine($"I have entered a valid {Username} and {Password}");
+            Console.WriteLine("I have entered a valid username and password");
             Thread.Sleep(5000);
-            IWebElement username = _driver.FindElement(By.XPath("//*[@id='username']"));
-            IWebElement password = _driver.FindElement(By.XPath("//*[@id='password']"));
+            IWebElement username = _driver.FindElement(By.Id("username"));
+            IWebElement password = _driver.FindElement(By.Id("password"));
+
+            IWebElement usernameTxt = _driver.FindElement(By.XPath("//*[text()='Username: ']/b"));
+            IWebElement passwordTxt = _driver.FindElement(By.XPath("//*[text()='Password: ']/b"));
+
+            string Uname_Value = _driver.FindElement(By.XPath("//*[text()='Username: ']/b")).Text;
+            string pwd_Value = _driver.FindElement(By.XPath("//*[text()='Password: ']/b")).Text;
+            Console.WriteLine($" Username {Uname_Value} and Password {pwd_Value}");
+
+            username.SendKeys(Uname_Value+Keys.Tab);
+            password.SendKeys(pwd_Value+Keys.Tab);
+          
+            jsExecutor = (IJavaScriptExecutor)_driver;
+            jsExecutor.ExecuteScript("arguments[0].scrollIntoView(true);", username);
+        }
+
+        [When(@"I click the login button")]
+        public void WhenIClickTheLoginButton()
+        {
+            Console.WriteLine("I click the login button");
+            Thread.Sleep(5000);
+            IWebElement loginBtn = _driver.FindElement(By.XPath("//*[text()='Login']"));
+            loginBtn.Click();
+
+        }
+
+
+
+[Then(@"Validation of Login Credentials and User Access")]
+public void ThenValidateTheLoginIsWorking()
+{
+    IWebElement validateTxt = _driver.FindElement(By.XPath("//*[@id='flash']/b"));
+    string expectedTxt = validateTxt.Text;
+    for (int i = 0; i < 10; i++)
+    {
+        if (invalidLoginActualTxt.Equals(expectedTxt))
+        { 
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("Not correct Login credential");
+          
+            break;
+        }
+        else if (actualTxt.Equals(expectedTxt))
+        {
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("Correct credential");
+            Console.WriteLine(" Validate succesfully! ");
+            break;
+        }
+
+    }
+}
+        [Then(@"Validate Login Message After Clicking the Login Button")]
+        public void ThenValidateLoginMessageAfterClickingTheLoginButton()
+        {
+            IWebElement validateTxt = _driver.FindElement(By.XPath("//*[@id='flash']/b"));
+            string expectedTxt = validateTxt.Text;
 
             try
             {
-                for(int i=0; i<=10; i++)
+                for (int i = 0; i < 10; i++)
                 {
-                    if (username.Displayed)
+                    if (invalidLoginActualTxt.Equals(expectedTxt))
                     {
-                        username.SendKeys(Username + Keys.Tab);
-                        password.SendKeys(Password + Keys.Tab);
+                       
+                        Console.WriteLine("Wrong credential expected message validate successfully!");
                         break;
                     }
+                    else if (actualTxt.Equals(expectedTxt))
+                    {
+
+                        Console.WriteLine("Correct credential expected message validate successfully");
+                        break;
+                    }
+                    Console.WriteLine("Expected message is not validated succesfully");
+                    Assert.Fail();
+
                 }
             }
             catch (Exception ex)
             {
-                Assert.Fail(ex.Message);
+                Console.WriteLine(ex.Message);
+                Assert.Fail("Expected message is not validated succesfully"); 
             }
             
-             
-
-            jsExecutor = (IJavaScriptExecutor)_driver;
-            jsExecutor.ExecuteScript("arguments[0].scrollIntoView(true);", username);
         }
 
-        [Given(@"Enter the Credentials")]
-        public void GivenEnterTheCredentials()
-        {
-            //_jsonReader.ReadJsonFile();
-            var User = _jsonReader.TestDataURL("Username");
-            var Passwd = _jsonReader.TestDataURL("Password");
 
-            Console.WriteLine($"I have entered a valid {User} and {Passwd}");
-            Thread.Sleep(5000);
-            IWebElement username = _driver.FindElement(By.XPath("//*[@id='username']"));
-            IWebElement password = _driver.FindElement(By.XPath("//*[@id='password']"));
+        [Then(@"Validation of Login Credentials ""(.*)"" and ""(.*)""")]
+        public void ThenValidateTheLoginIsWorking(string Username, string Password)
+        {
+            string ActualURL = "https://practice.expandtesting.com/secure";
+            string Url = _driver.Url;
+            Console.WriteLine(Url);
 
             try
             {
-                for (int i = 0; i <= 10; i++)
+                if (Username == "practice" && Password == "SuperSecretPassword!" && Url == ActualURL)
                 {
-                    if (username.Displayed)
-                    {
-                        username.SendKeys(User + Keys.Tab);
-                        password.SendKeys(Passwd + Keys.Tab);
-                        break;
-                    }
+                    Thread.Sleep(5000);
+                    Console.WriteLine("Correct login Credential");
+                }
+                else if ((Username != "practice" || Password != "SuperSecretPassword!") && Url == ActualURL)
+                {
+                    Thread.Sleep(5000);
+                    Console.WriteLine("Login SuccessFully but credential Is not valid");
+                    Assert.Fail("Incorrect login Credential");
+                }
+                else
+                {
+                    Thread.Sleep(5000);
+                    Console.WriteLine("Login page is still showing. Test failed.");
+                    Assert.Fail("Incorrect login Credential");
                 }
             }
             catch (Exception ex)
             {
-                Assert.Fail(ex.Message);
+                Console.WriteLine($"Unexpected error: {ex.Message}");  
             }
-
-
-
-            jsExecutor = (IJavaScriptExecutor)_driver;
-            jsExecutor.ExecuteScript("arguments[0].scrollIntoView(true);", username);
         }
 
+        [Then(@"I should be redirected to the dashboard")]
+        public void ThenIShouldBeRedirectedToTheDashboard()
+        {
+            Console.WriteLine("I should be redirected to the dashboard");
+              Thread.Sleep(5000);
+            _waitHelper = new WebdriverWaitClass(_driver);
+            By element = By.XPath("//*[text()=' Logout']");
+            _waitHelper.WaitTillVisibilityOfTheElement(element);
+            _driver.FindElement(element).Click();
+           
+             
+        }
     }
 }
