@@ -102,7 +102,7 @@ public void ThenValidateTheLoginIsWorking()
                         break;
                     }
                     Console.WriteLine("Expected message is not Correct");
-                    Assert.Fail();
+                    Assert.Fail("Expected message is not Correct");
 
                 }
             }
