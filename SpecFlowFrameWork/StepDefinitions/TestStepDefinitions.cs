@@ -101,7 +101,7 @@ public void ThenValidateTheLoginIsWorking()
                         Console.WriteLine("Correct credential expected message validate successfully");
                         break;
                     }
-                    Console.WriteLine("Expected message is not validated succesfully");
+                    Console.WriteLine("Expected message is not Correct");
                     Assert.Fail();
 
                 }
