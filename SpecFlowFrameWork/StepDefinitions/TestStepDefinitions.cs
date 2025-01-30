@@ -53,26 +53,38 @@ namespace SpecFlowFrameWork.StepDefinitions
 
             IWebElement validateTxt = _driver.FindElement(By.XPath("//*[@id='flash']/b"));
             string expectedTxt = validateTxt.Text;
-            for(int i=0; i<10; i++)
-            {
-                if (invalidLoginActualTxt.Equals(expectedTxt))
-                {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Not correct Login credential");
-                    //Assert.Fail();
-                    break;
-                }
-                else if(actualTxt.Equals(expectedTxt))
-                {
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    Console.WriteLine("Correct credential");
-                    Console.WriteLine(" Validate succesfully! ");
-                    break;
-                }
-               
-            }
-
+            
         }
+
+[Then(@"Validation of Login Credentials and User Access")]
+public void ThenValidateTheLoginIsWorking()
+{
+    IWebElement validateTxt = _driver.FindElement(By.XPath("//*[@id='flash']/b"));
+    string expectedTxt = validateTxt.Text;
+    for (int i = 0; i < 10; i++)
+    {
+        if (invalidLoginActualTxt.Equals(expectedTxt))
+        { 
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("Not correct Login credential");
+            string currentUrl = _driver.Url;
+            if (currentUrl.Contains("https://practice.expandtesting.com/secure"))
+            { 
+                Console.WriteLine("Login page is still showing. Test failed.");
+                Assert.Fail("Login page was displayed with invalid credentials.");
+            }
+            break;
+        }
+        else if (actualTxt.Equals(expectedTxt))
+        {
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("Correct credential");
+            Console.WriteLine(" Validate succesfully! ");
+            break;
+        }
+
+    }
+}
 
         [Then(@"I should be redirected to the dashboard")]
         public void ThenIShouldBeRedirectedToTheDashboard()
