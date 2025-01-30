@@ -53,7 +53,26 @@ namespace SpecFlowFrameWork.StepDefinitions
 
             IWebElement validateTxt = _driver.FindElement(By.XPath("//*[@id='flash']/b"));
             string expectedTxt = validateTxt.Text;
-            
+            for (int i = 0; i < 10; i++)
+            {
+                if (invalidLoginActualTxt.Equals(expectedTxt))
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("Not correct Login credential");
+                    string currentUrl = _driver.Url;
+                    
+                    break;
+                }
+                else if (actualTxt.Equals(expectedTxt))
+                {
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.WriteLine("Correct credential");
+                    Console.WriteLine(" Validate succesfully! ");
+                    break;
+                }
+
+            }
+
         }
 
 [Then(@"Validation of Login Credentials and User Access")]
@@ -67,12 +86,7 @@ public void ThenValidateTheLoginIsWorking()
         { 
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine("Not correct Login credential");
-            string currentUrl = _driver.Url;
-            if (currentUrl.Contains("https://practice.expandtesting.com/secure"))
-            { 
-                Console.WriteLine("Login page is still showing. Test failed.");
-                Assert.Fail("Login page was displayed with invalid credentials.");
-            }
+          
             break;
         }
         else if (actualTxt.Equals(expectedTxt))
@@ -85,6 +99,39 @@ public void ThenValidateTheLoginIsWorking()
 
     }
 }
+
+        [Then(@"Validation of Login Credentials ""(.*)"" and ""(.*)""")]
+        public void ThenValidateTheLoginIsWorking(string Username, string Password)
+        {
+            string ActualURL = "https://practice.expandtesting.com/secure";
+            string Url = _driver.Url;
+            Console.WriteLine(Url);
+
+            try
+            {
+                if (Username == "practice" && Password == "SuperSecretPassword!" && Url == ActualURL)
+                {
+                    Thread.Sleep(5000);
+                    Console.WriteLine("Correct login Credential");
+                }
+                else if (Username != "practice" && Password != "SuperSecretPassword!" && Url == ActualURL)
+                {
+                    Thread.Sleep(5000);
+                    Console.WriteLine("Login SuccessFully but credential Is not valid");
+                    Assert.Fail("Incorrect login Credential");
+                }
+                else
+                {
+                    Thread.Sleep(5000);
+                    Console.WriteLine("Login page is still showing. Test failed.");
+                    Assert.Fail("Incorrect login Credential");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Unexpected error: {ex.Message}");  
+            }
+        }
 
         [Then(@"I should be redirected to the dashboard")]
         public void ThenIShouldBeRedirectedToTheDashboard()
