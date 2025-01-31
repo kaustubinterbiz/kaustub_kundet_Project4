@@ -8,8 +8,8 @@ Scenario Outline: DataDrivenTesting
     Given  Entered a valid "<Username>" and "<Password>"
     When I click the login button
     #Then Validation of Login Credentials and User Access
-    Then Validate Login Message After Clicking the Login Button
-    Then Validation of Login Credentials "<Username>" and "<Password>"
+    Then Validate Login Message After Clicking the Login Button <Username>, <Password>
+    #Then Validation of Login Credentials "<Username>" and "<Password>"
     
     Examples: 
      | Username | Password             |
