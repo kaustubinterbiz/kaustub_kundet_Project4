@@ -159,23 +159,23 @@ namespace SpecFlowFrameWork.Hooks
 
                 if (scenarioContext.TestError != null)
                 {
-                    _scenario.CreateNode(stepName).Fail(scenarioContext.TestError.Message, er.addScreenshot(_driver, Filename));
+                    //_scenario.CreateNode(stepName).Fail(scenarioContext.TestError.Message, er.addScreenshot(_driver, Filename));
                     //ExtentReport.AddScreenshotToReport(screenshotPath);
                     if (stepType == "Given")
                     {
-                        _scenario.CreateNode<Given>(stepName).Fail(scenarioContext.TestError.Message);
+                        _scenario.CreateNode<Given>(stepName).Fail(scenarioContext.TestError.Message, er.addScreenshot(_driver, Filename));
                     }
                     else if (stepType == "When")
                     {
-                        _scenario.CreateNode<When>(stepName).Fail(scenarioContext.TestError.Message);
+                        _scenario.CreateNode<When>(stepName).Fail(scenarioContext.TestError.Message, er.addScreenshot(_driver, Filename));
                     }
                     else if (stepType == "Then")
                     {
-                       _scenario.CreateNode<Then>(stepName).Fail(scenarioContext.TestError.Message);
+                       _scenario.CreateNode<Then>(stepName).Fail(scenarioContext.TestError.Message, er.addScreenshot(_driver, Filename));
                     }
                     else if (stepType == "And")
                     {
-                        _scenario.CreateNode<And>(stepName).Fail(scenarioContext.TestError.Message);
+                        _scenario.CreateNode<And>(stepName).Fail(scenarioContext.TestError.Message, er.addScreenshot(_driver, Filename));
                     }
                 }
             }
