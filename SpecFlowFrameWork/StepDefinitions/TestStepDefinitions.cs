@@ -148,6 +148,29 @@ public void ThenValidateTheLoginIsWorking()
             }
         }
 
+         [Then(@"Validate Login Message After Clicking the Login Button (.*), (.*)")]
+ public void ThenValidateLoginMessageAfterClickingTheLoginButton(string Username, string Password)
+ {
+     IWebElement validateTxt = _driver.FindElement(By.XPath("//*[@id='flash']/b"));
+     string expectedTxt = validateTxt.Text;
+
+     bool InvalidLoginResult = expectedTxt.ToLower().Contains("invalid");
+     bool ValidLoginResult = expectedTxt.ToLower().Contains("secure");
+
+    
+
+     if(Username == "practice" && Password == "SuperSecretPassword!") 
+     {
+             Assert.IsTrue(ValidLoginResult, "Not Proper Message Appear after Valid Login");
+         
+     }else
+     {
+         Assert.IsTrue(InvalidLoginResult, "Not Proper Message Appear invalid Login");
+     }
+
+
+ }
+
         [Then(@"I should be redirected to the dashboard")]
         public void ThenIShouldBeRedirectedToTheDashboard()
         {
